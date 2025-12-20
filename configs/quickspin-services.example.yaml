@@ -1,0 +1,69 @@
+# QuickSpin Service Definition Example
+# Used with: qspin deploy apply -f quickspin-services.yaml
+
+version: "1"
+organization: my-company
+
+services:
+  - name: cache-primary
+    type: redis
+    tier: developer
+    region: us-east-1
+    config:
+      maxmemory: 256mb
+      maxmemory-policy: allkeys-lru
+      persistence: enabled
+    labels:
+      environment: development
+      team: backend
+      project: myapp
+
+  - name: message-queue
+    type: rabbitmq
+    tier: developer
+    region: us-east-1
+    config:
+      vhost: /myapp
+      management_enabled: true
+    labels:
+      environment: development
+      team: backend
+      project: myapp
+
+  - name: search-engine
+    type: elasticsearch
+    tier: developer
+    region: us-east-1
+    config:
+      nodes: 1
+      index_replicas: 0
+    labels:
+      environment: development
+      team: search
+      project: myapp
+
+  - name: postgres-db
+    type: postgresql
+    tier: developer
+    region: us-east-1
+    config:
+      database: myapp
+      extensions:
+        - uuid-ossp
+        - pg_trgm
+    labels:
+      environment: development
+      team: backend
+      project: myapp
+
+  - name: mongo-db
+    type: mongodb
+    tier: developer
+    region: us-east-1
+    config:
+      database: myapp
+      auth_enabled: true
+    labels:
+      environment: development
+      team: backend
+      project: myapp

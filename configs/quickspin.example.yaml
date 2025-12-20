@@ -1,0 +1,44 @@
+# QuickSpin CLI Configuration Example
+# Copy this file to ~/.quickspin/config.yaml and customize
+
+api:
+  url: https://api.quickspin.dev
+  timeout: 30s
+
+auth:
+  # Tokens are stored separately in secure storage (OS keychain)
+  # Available methods: jwt, oauth
+  method: jwt
+
+defaults:
+  organization: ""
+  region: us-east-1
+  output: table  # Options: table, json, yaml
+  service_type: redis
+  tier: developer
+
+profiles:
+  production:
+    api:
+      url: https://api.quickspin.io
+    defaults:
+      organization: org_prod456
+      tier: pro
+
+  staging:
+    api:
+      url: https://api-staging.quickspin.dev
+    defaults:
+      organization: org_staging789
+      tier: developer
+
+  local:
+    api:
+      url: http://localhost:8000
+    defaults:
+      organization: ""
+      tier: developer
+
+telemetry:
+  enabled: true
+  anonymous: true
