@@ -71,7 +71,7 @@ For full documentation, visit [https://docs.quickspin.dev](https://docs.quickspi
 
 ## Support
 
-- GitHub Issues: [https://github.com/quickspin/quickspin-cli/issues](https://github.com/quickspin/quickspin-cli/issues)
+- GitHub Issues: [https://github.com/QuickSpin-Saas/quick-spin-cli/issues](https://github.com/QuickSpin-Saas/quick-spin-cli/issues)
 - Email: support@quickspin.dev
 
 ## License

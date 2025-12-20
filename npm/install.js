@@ -7,7 +7,7 @@ const https = require('https');
 const zlib = require('zlib');
 const tar = require('tar');
 
-const GITHUB_REPO = 'quickspin/quickspin-cli';
+const GITHUB_REPO = 'QuickSpin-Saas/quick-spin-cli';
 const packageJson = require('./package.json');
 const VERSION = packageJson.version;
 
