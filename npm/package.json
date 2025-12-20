@@ -1,5 +1,5 @@
 {
-  "name": "@quickspin/cli",
+  "name": "quickspin-cli",
   "version": "0.1.0",
   "description": "Official CLI for QuickSpin - Managed microservices platform providing Redis, RabbitMQ, Elasticsearch, PostgreSQL, and MongoDB as fully managed services",
   "main": "index.js",

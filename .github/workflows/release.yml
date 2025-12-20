@@ -70,7 +70,7 @@ jobs:
 
             Install via npm:
             ```bash
-            npm install -g @quickspin/cli
+            npm install -g quickspin-cli
             ```
 
             ### What's Changed
@@ -80,7 +80,7 @@ jobs:
 
             **npm (Recommended):**
             ```bash
-            npm install -g @quickspin/cli
+            npm install -g quickspin-cli
             ```
 
             **Direct Download:**
