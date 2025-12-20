@@ -1,11 +1,11 @@
-# @quickspin/cli
+# quickspin-cli
 
 Official CLI for QuickSpin - Managed microservices platform providing Redis, RabbitMQ, Elasticsearch, PostgreSQL, and MongoDB as fully managed services.
 
 ## Installation
 
 ```bash
-npm install -g @quickspin/cli
+npm install -g quickspin-cli
 ```
 
 ## Usage
