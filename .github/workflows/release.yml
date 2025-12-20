@@ -9,16 +9,11 @@ permissions:
   contents: write
 
 jobs:
-  goreleaser:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Fetch all tags
-        run: git fetch --force --tags
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -26,17 +21,75 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v6
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build binaries for all platforms
+        run: |
+          # Create dist directory
+          mkdir -p dist
+
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          COMMIT="${GITHUB_SHA::7}"
+          DATE=$(date -u +%Y-%m-%dT%H:%M:%S)
+          LDFLAGS="-s -w -X main.Version=${VERSION} -X main.Commit=${COMMIT} -X main.Date=${DATE}"
+
+          # Build for each platform
+          GOOS=darwin GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/qspin-darwin-x86_64 ./cmd/qspin
+          GOOS=darwin GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/qspin-darwin-arm64 ./cmd/qspin
+          GOOS=linux GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/qspin-linux-x86_64 ./cmd/qspin
+          GOOS=linux GOARCH=arm64 go build -ldflags "$LDFLAGS" -o dist/qspin-linux-arm64 ./cmd/qspin
+          GOOS=windows GOARCH=amd64 go build -ldflags "$LDFLAGS" -o dist/qspin-windows-x86_64.exe ./cmd/qspin
+
+      - name: Create archives
+        run: |
+          cd dist
+
+          # Create tar.gz for Unix systems
+          tar -czf qspin-${{ steps.get_version.outputs.VERSION }}-darwin-x86_64.tar.gz qspin-darwin-x86_64
+          tar -czf qspin-${{ steps.get_version.outputs.VERSION }}-darwin-arm64.tar.gz qspin-darwin-arm64
+          tar -czf qspin-${{ steps.get_version.outputs.VERSION }}-linux-x86_64.tar.gz qspin-linux-x86_64
+          tar -czf qspin-${{ steps.get_version.outputs.VERSION }}-linux-arm64.tar.gz qspin-linux-arm64
+
+          # Create zip for Windows
+          zip qspin-${{ steps.get_version.outputs.VERSION }}-windows-x86_64.zip qspin-windows-x86_64.exe
+
+          # Create checksums
+          sha256sum *.tar.gz *.zip > checksums.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          distribution: goreleaser
-          version: latest
-          args: release --clean
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt
+          body: |
+            ## QuickSpin CLI ${{ steps.get_version.outputs.VERSION }}
+
+            Install via npm:
+            ```bash
+            npm install -g @quickspin/cli
+            ```
+
+            ### What's Changed
+            See the [changelog](https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.sha }})
+
+            ### Installation
+
+            **npm (Recommended):**
+            ```bash
+            npm install -g @quickspin/cli
+            ```
+
+            **Direct Download:**
+            Download the binary for your platform from the assets below.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   npm-publish:
-    needs: goreleaser
+    needs: build-and-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
