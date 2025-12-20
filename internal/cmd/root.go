@@ -70,9 +70,9 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&org, "org", "", "override organization context")
 
 	// Bind flags to viper
-	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
-	viper.BindPFlag("api.url", rootCmd.PersistentFlags().Lookup("api-url"))
-	viper.BindPFlag("defaults.organization", rootCmd.PersistentFlags().Lookup("org"))
+	_ = viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
+	_ = viper.BindPFlag("api.url", rootCmd.PersistentFlags().Lookup("api-url"))
+	_ = viper.BindPFlag("defaults.organization", rootCmd.PersistentFlags().Lookup("org"))
 }
 
 // initConfig reads in config file and ENV variables if set.
