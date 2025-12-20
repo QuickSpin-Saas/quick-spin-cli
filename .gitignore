@@ -56,6 +56,15 @@ __debug_bin
 # Release artifacts
 goreleaser/
 .goreleaser.dist.yaml
+.goreleaser.yml.bak
+
+# npm
+node_modules/
+npm/bin/
+npm/dist/
+npm/package-lock.json
+*.log
+npm-debug.log*
 
 # OS files
 Thumbs.db

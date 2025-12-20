@@ -1,0 +1,104 @@
+# GoReleaser configuration for QuickSpin CLI
+# Simplified - npm distribution only
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - id: qspin
+    binary: qspin
+    main: ./cmd/qspin
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Commit={{.ShortCommit}}
+      - -X main.Date={{.Date}}
+      - -X main.BuiltBy=goreleaser
+
+archives:
+  - id: qspin-archive
+    name_template: >-
+      {{ .ProjectName }}-
+      {{- .Version }}-
+      {{- .Os }}-
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: "Bug fixes"
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: "Enhancements"
+      regexp: "^.*chore[(\\w)]*:+.*$"
+      order: 2
+    - title: Others
+      order: 999
+
+release:
+  github:
+    owner: quickspin
+    name: quickspin-cli
+  draft: false
+  prerelease: auto
+  mode: append
+  header: |
+    ## QuickSpin CLI {{ .Tag }}
+
+    Install via npm:
+    ```bash
+    npm install -g @quickspin/cli
+    ```
+
+  footer: |
+    ## Installation
+
+    ### npm (Recommended)
+    ```bash
+    npm install -g @quickspin/cli
+    ```
+
+    ### Direct Download
+    Download the binary for your platform from the assets below.
+
+    **Full Changelog**: https://github.com/quickspin/quickspin-cli/compare/{{ .PreviousTag }}...{{ .Tag }}

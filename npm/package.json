@@ -1,0 +1,61 @@
+{
+  "name": "@quickspin/cli",
+  "version": "0.1.0",
+  "description": "Official CLI for QuickSpin - Managed microservices platform providing Redis, RabbitMQ, Elasticsearch, PostgreSQL, and MongoDB as fully managed services",
+  "main": "index.js",
+  "bin": {
+    "qspin": "./bin/qspin"
+  },
+  "scripts": {
+    "postinstall": "node install.js",
+    "preuninstall": "node uninstall.js",
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quickspin/quickspin-cli.git"
+  },
+  "keywords": [
+    "quickspin",
+    "cli",
+    "microservices",
+    "redis",
+    "rabbitmq",
+    "elasticsearch",
+    "postgresql",
+    "mongodb",
+    "mysql",
+    "database",
+    "managed-services",
+    "devtools",
+    "kubernetes",
+    "cloud"
+  ],
+  "author": "QuickSpin Team <opensource@quickspin.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quickspin/quickspin-cli/issues"
+  },
+  "homepage": "https://quickspin.dev",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "bin/",
+    "dist/",
+    "install.js",
+    "uninstall.js",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
+}
