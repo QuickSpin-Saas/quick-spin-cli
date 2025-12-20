@@ -111,7 +111,7 @@ async function install() {
     }
 
     const downloadURL = getDownloadURL();
-    const { platform } = getPlatform();
+    const { platform, arch } = getPlatform();
     const ext = platform === 'windows' ? 'zip' : 'tar.gz';
     const archivePath = path.join(distDir, `qspin.${ext}`);
 
@@ -124,7 +124,6 @@ async function install() {
 
     // Move binary to bin directory
     const binaryName = getBinaryName();
-    const { platform, arch } = getPlatform();
     const extractedBinaryName = platform === 'windows' ? `qspin-${platform}-${arch}.exe` : `qspin-${platform}-${arch}`;
     const extractedBinary = path.join(distDir, extractedBinaryName);
     const targetBinary = path.join(binDir, binaryName);
