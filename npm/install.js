@@ -124,7 +124,9 @@ async function install() {
 
     // Move binary to bin directory
     const binaryName = getBinaryName();
-    const extractedBinary = path.join(distDir, binaryName);
+    const { platform, arch } = getPlatform();
+    const extractedBinaryName = platform === 'windows' ? `qspin-${platform}-${arch}.exe` : `qspin-${platform}-${arch}`;
+    const extractedBinary = path.join(distDir, extractedBinaryName);
     const targetBinary = path.join(binDir, binaryName);
 
     if (fs.existsSync(extractedBinary)) {
