@@ -76,8 +76,8 @@ changelog:
 
 release:
   github:
-    owner: quickspin
-    name: quickspin-cli
+    owner: QuickSpin-Saas
+    name: quick-spin-cli
   draft: false
   prerelease: auto
   mode: append

@@ -4,8 +4,9 @@
 *.dll
 *.so
 *.dylib
-qspin
-quickspin-cli
+/qspin
+/quickspin-cli
+/bin/qspin
 
 # Test binary, built with `go test -c`
 *.test
