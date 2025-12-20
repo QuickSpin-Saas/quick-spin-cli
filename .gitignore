@@ -38,7 +38,7 @@ go.work
 # Build artifacts
 dist/
 build/
-bin/
+/bin/
 *.tar.gz
 *.zip
 
@@ -61,7 +61,8 @@ goreleaser/
 
 # npm
 node_modules/
-npm/bin/
+npm/bin/qspin.exe
+npm/bin/qspin-*
 npm/dist/
 npm/package-lock.json
 *.log

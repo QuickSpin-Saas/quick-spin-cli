@@ -57,5 +57,9 @@
     "index.js",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "dependencies": {
+    "tar": "^7.4.3",
+    "adm-zip": "^0.5.16"
+  }
 }

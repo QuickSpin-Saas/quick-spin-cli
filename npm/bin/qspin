@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const { spawn } = require('child_process');
+const fs = require('fs');
+
+// Determine the correct binary name based on platform
+function getBinaryPath() {
+  const binDir = path.join(__dirname);
+  const binaryName = process.platform === 'win32' ? 'qspin.exe' : 'qspin';
+  const binaryPath = path.join(binDir, binaryName);
+
+  // Check if binary exists
+  if (!fs.existsSync(binaryPath)) {
+    console.error('QuickSpin CLI binary not found.');
+    console.error('Please try reinstalling: npm install -g quickspin-cli');
+    process.exit(1);
+  }
+
+  return binaryPath;
+}
+
+// Run the binary
+try {
+  const binaryPath = getBinaryPath();
+  const args = process.argv.slice(2);
+
+  const child = spawn(binaryPath, args, {
+    stdio: 'inherit',
+    windowsHide: true
+  });
+
+  child.on('exit', (code, signal) => {
+    if (signal) {
+      process.kill(process.pid, signal);
+    } else {
+      process.exit(code);
+    }
+  });
+
+  // Handle parent process signals
+  ['SIGINT', 'SIGTERM'].forEach((signal) => {
+    process.on(signal, () => {
+      child.kill(signal);
+    });
+  });
+
+} catch (error) {
+  console.error('Error running QuickSpin CLI:', error.message);
+  process.exit(1);
+}
