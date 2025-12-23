@@ -41,7 +41,39 @@ func (c *Config) GetAPIURL() string {
 	if url := os.Getenv("QUICKSPIN_API_URL"); url != "" {
 		return url
 	}
-	return c.v.GetString("api.url")
+
+	// Check for environment-based URL
+	env := c.GetEnvironment()
+	envURL := c.v.GetString(fmt.Sprintf("api.environments.%s", env))
+	if envURL != "" {
+		return envURL
+	}
+
+	// Fall back to default URL
+	url := c.v.GetString("api.url")
+	if url == "" {
+		// Default to production if not set
+		return "https://api.quickspin.cloud"
+	}
+	return url
+}
+
+// GetEnvironment returns the current environment (dev, staging, prod)
+func (c *Config) GetEnvironment() string {
+	// Check environment variable first
+	if env := os.Getenv("QUICKSPIN_ENV"); env != "" {
+		return env
+	}
+	env := c.v.GetString("api.environment")
+	if env == "" {
+		return "prod" // Default to production
+	}
+	return env
+}
+
+// SetEnvironment sets the current environment
+func (c *Config) SetEnvironment(env string) {
+	c.v.Set("api.environment", env)
 }
 
 // GetAPITimeout returns the API timeout
@@ -91,6 +123,41 @@ func (c *Config) GetToken() (string, error) {
 	}
 
 	return creds.AccessToken, nil
+}
+
+// GetRefreshToken returns the stored refresh token
+func (c *Config) GetRefreshToken() (string, error) {
+	// Check environment variable first
+	if token := os.Getenv("QUICKSPIN_REFRESH_TOKEN"); token != "" {
+		return token, nil
+	}
+
+	// Try to load from credential store
+	creds, err := LoadCredentials()
+	if err != nil {
+		return "", err
+	}
+
+	return creds.RefreshToken, nil
+}
+
+// GetCredentials returns both access and refresh tokens
+func (c *Config) GetCredentials() (accessToken, refreshToken string, err error) {
+	// Try to load from credential store
+	creds, err := LoadCredentials()
+	if err != nil {
+		return "", "", err
+	}
+
+	// Check environment variables (they override stored credentials)
+	if token := os.Getenv("QUICKSPIN_TOKEN"); token != "" {
+		creds.AccessToken = token
+	}
+	if token := os.Getenv("QUICKSPIN_REFRESH_TOKEN"); token != "" {
+		creds.RefreshToken = token
+	}
+
+	return creds.AccessToken, creds.RefreshToken, nil
 }
 
 // SaveToken saves the authentication token
@@ -175,7 +242,11 @@ func InitConfig() error {
 	}
 
 	// Set defaults
-	cfg.Set("api.url", "https://api.quickspin.dev")
+	cfg.Set("api.url", "https://api.quickspin.cloud")
+	cfg.Set("api.environment", "prod")
+	cfg.Set("api.environments.dev", "http://localhost:8000")
+	cfg.Set("api.environments.staging", "https://staging-api.quickspin.cloud")
+	cfg.Set("api.environments.prod", "https://api.quickspin.cloud")
 	cfg.Set("api.timeout", "30s")
 	cfg.Set("auth.method", "jwt")
 	cfg.Set("defaults.region", "us-east-1")

@@ -31,12 +31,12 @@
     "kubernetes",
     "cloud"
   ],
-  "author": "QuickSpin Team <opensource@quickspin.dev>",
+  "author": "QuickSpin Team <opensource@quickspin.cloud>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/QuickSpin-Saas/quick-spin-cli/issues"
   },
-  "homepage": "https://quickspin.dev",
+  "homepage": "https://quickspin.cloud",
   "engines": {
     "node": ">=14.0.0"
   },

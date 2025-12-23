@@ -1,8 +1,5 @@
 package models
 
-import "time"
-
-// BillingPlan represents a subscription plan
 type BillingPlan string
 
 const (
@@ -21,7 +18,6 @@ const (
 	InvoiceStatusFailed  InvoiceStatus = "failed"
 )
 
-// UsageSummary represents current usage summary
 type UsageSummary struct {
 	OrganizationID string                 `json:"organization_id"`
 	Period         string                 `json:"period"`
@@ -29,7 +25,7 @@ type UsageSummary struct {
 	ServiceCount   int                    `json:"service_count"`
 	Services       []ServiceUsage         `json:"services,omitempty"`
 	Breakdown      map[string]interface{} `json:"breakdown,omitempty"`
-	UpdatedAt      time.Time              `json:"updated_at"`
+	UpdatedAt      Time                   `json:"updated_at"`
 }
 
 // ServiceUsage represents usage for a single service
@@ -42,7 +38,6 @@ type ServiceUsage struct {
 	Uptime      float64 `json:"uptime_hours"`
 }
 
-// Invoice represents a billing invoice
 type Invoice struct {
 	ID             string        `json:"id"`
 	OrganizationID string        `json:"organization_id"`
@@ -50,9 +45,9 @@ type Invoice struct {
 	Currency       string        `json:"currency"`
 	Status         InvoiceStatus `json:"status"`
 	Period         string        `json:"period"`
-	DueDate        time.Time     `json:"due_date"`
-	PaidAt         *time.Time    `json:"paid_at,omitempty"`
-	CreatedAt      time.Time     `json:"created_at"`
+	DueDate        Time          `json:"due_date"`
+	PaidAt         *Time         `json:"paid_at,omitempty"`
+	CreatedAt      Time          `json:"created_at"`
 	DownloadURL    string        `json:"download_url,omitempty"`
 }
 
@@ -62,7 +57,6 @@ type InvoiceListResponse struct {
 	Total    int       `json:"total"`
 }
 
-// PlanInfo represents subscription plan information
 type PlanInfo struct {
 	Plan          BillingPlan `json:"plan"`
 	DisplayName   string      `json:"display_name"`
@@ -70,7 +64,7 @@ type PlanInfo struct {
 	ServiceLimit  int         `json:"service_limit"`
 	Features      []string    `json:"features"`
 	CurrentPlan   bool        `json:"current_plan"`
-	NextBillingAt *time.Time  `json:"next_billing_at,omitempty"`
+	NextBillingAt *Time       `json:"next_billing_at,omitempty"`
 }
 
 // UpgradePlanRequest represents a request to upgrade plan

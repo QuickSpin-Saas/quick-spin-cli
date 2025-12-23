@@ -1,6 +1,36 @@
 package models
 
-// APIError represents an API error response
+import (
+	"strings"
+	"time"
+)
+
+type Time struct {
+	time.Time
+}
+
+func (t *Time) UnmarshalJSON(data []byte) error {
+	s := strings.Trim(string(data), `"`)
+	if s == "" || s == "null" {
+		return nil
+	}
+
+	layouts := []string{
+		time.RFC3339,
+		"2006-01-02T15:04:05",
+	}
+
+	for _, layout := range layouts {
+		parsed, err := time.Parse(layout, s)
+		if err == nil {
+			t.Time = parsed
+			return nil
+		}
+	}
+
+	return nil
+}
+
 type APIError struct {
 	StatusCode int                    `json:"status_code"`
 	Code       string                 `json:"code"`
@@ -8,7 +38,6 @@ type APIError struct {
 	Details    map[string]interface{} `json:"details,omitempty"`
 }
 
-// Error implements the error interface
 func (e *APIError) Error() string {
 	return e.Message
 }

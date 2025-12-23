@@ -1,22 +1,20 @@
 package models
 
-import "time"
-
 // Organization represents an organization
 type Organization struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Slug      string    `json:"slug"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Slug      string `json:"slug"`
+	CreatedAt Time   `json:"created_at"`
+	UpdatedAt Time   `json:"updated_at"`
 }
 
 // OrganizationMember represents a member of an organization
 type OrganizationMember struct {
-	User      User      `json:"user"`
-	Role      UserRole  `json:"role"`
-	JoinedAt  time.Time `json:"joined_at"`
-	InvitedBy string    `json:"invited_by,omitempty"`
+	User      User     `json:"user"`
+	Role      UserRole `json:"role"`
+	JoinedAt  Time     `json:"joined_at"`
+	InvitedBy string   `json:"invited_by,omitempty"`
 }
 
 // InviteMemberRequest represents a request to invite a member

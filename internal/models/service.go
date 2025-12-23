@@ -1,8 +1,5 @@
 package models
 
-import "time"
-
-// ServiceType represents the type of service
 type ServiceType string
 
 const (
@@ -39,7 +36,6 @@ const (
 	ServiceStatusDeleting ServiceStatus = "deleting"
 )
 
-// Service represents a managed service instance
 type Service struct {
 	ID             string                 `json:"id"`
 	Name           string                 `json:"name"`
@@ -50,8 +46,8 @@ type Service struct {
 	OrganizationID string                 `json:"organization_id"`
 	Config         map[string]interface{} `json:"config,omitempty"`
 	Labels         map[string]string      `json:"labels,omitempty"`
-	CreatedAt      time.Time              `json:"created_at"`
-	UpdatedAt      time.Time              `json:"updated_at"`
+	CreatedAt      Time                   `json:"created_at"`
+	UpdatedAt      Time                   `json:"updated_at"`
 	Credentials    *ServiceCredentials    `json:"credentials,omitempty"`
 	Resources      *ServiceResources      `json:"resources,omitempty"`
 	Namespace      string                 `json:"namespace,omitempty"`
@@ -104,18 +100,16 @@ type ServiceListResponse struct {
 	Total    int       `json:"total"`
 }
 
-// ServiceLogEntry represents a single log entry
 type ServiceLogEntry struct {
-	Timestamp time.Time `json:"timestamp"`
-	Level     string    `json:"level"`
-	Message   string    `json:"message"`
-	Source    string    `json:"source,omitempty"`
+	Timestamp Time   `json:"timestamp"`
+	Level     string `json:"level"`
+	Message   string `json:"message"`
+	Source    string `json:"source,omitempty"`
 }
 
-// ServiceMetrics represents service metrics
 type ServiceMetrics struct {
 	ServiceID string                 `json:"service_id"`
-	Timestamp time.Time              `json:"timestamp"`
+	Timestamp Time                   `json:"timestamp"`
 	CPU       float64                `json:"cpu_percent"`
 	Memory    float64                `json:"memory_percent"`
 	Storage   float64                `json:"storage_percent"`

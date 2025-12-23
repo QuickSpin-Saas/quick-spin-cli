@@ -359,10 +359,10 @@ deploy:
 
 ## Support
 
-- Documentation: https://docs.quickspin.dev
+- Documentation: https://docs.quickspin.cloud
 - GitHub Issues: https://github.com/quickspin/quickspin-cli/issues
-- Community: https://community.quickspin.dev
-- Email: support@quickspin.dev
+- Community: https://community.quickspin.cloud
+- Email: support@quickspin.cloud
 
 ## Development
 

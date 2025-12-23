@@ -1,8 +1,5 @@
 package models
 
-import "time"
-
-// UserRole represents a user's role
 type UserRole string
 
 const (
@@ -12,14 +9,16 @@ const (
 	UserRoleViewer UserRole = "viewer"
 )
 
-// User represents a user account
 type User struct {
-	ID        string    `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
-	Role      UserRole  `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID             string   `json:"id"`
+	Email          string   `json:"email"`
+	Name           string   `json:"name"`
+	FirstName      string   `json:"first_name,omitempty"`
+	LastName       string   `json:"last_name,omitempty"`
+	Role           UserRole `json:"role"`
+	OrganizationID string   `json:"organization_id,omitempty"`
+	CreatedAt      Time     `json:"created_at"`
+	UpdatedAt      Time     `json:"updated_at"`
 }
 
 // AuthTokens represents authentication tokens

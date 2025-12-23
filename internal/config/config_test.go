@@ -20,7 +20,7 @@ func TestGetAPIURL(t *testing.T) {
 
 	// Test default value
 	url := cfg.GetAPIURL()
-	assert.Equal(t, "https://api.quickspin.dev", url)
+	assert.Equal(t, "https://api.quickspin.cloud", url)
 
 	// Test environment variable override
 	os.Setenv("QUICKSPIN_API_URL", "http://localhost:8000")

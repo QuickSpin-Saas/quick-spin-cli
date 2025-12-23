@@ -6,6 +6,9 @@ import (
 
 	"github.com/quickspin/quickspin-cli/internal/cmd/auth"
 	"github.com/quickspin/quickspin-cli/internal/cmd/config"
+	"github.com/quickspin/quickspin-cli/internal/cmd/service"
+	outputpkg "github.com/quickspin/quickspin-cli/internal/output"
+	"github.com/quickspin/quickspin-cli/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -40,6 +43,21 @@ Kubernetes multi-tenant architecture.
 Perfect for developers with limited RAM or Docker configuration challenges.`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// When qspin is run without subcommands, launch TUI dashboard
+		outputFormat := viper.GetString("defaults.output")
+		if output != "" {
+			outputFormat = output
+		}
+
+		// Check if we should use TUI
+		if outputpkg.ShouldUseTUI(outputFormat) {
+			return tui.LaunchApp()
+		}
+
+		// Otherwise show help
+		return cmd.Help()
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -57,6 +75,7 @@ func init() {
 	// Add subcommands
 	rootCmd.AddCommand(auth.NewAuthCmd())
 	rootCmd.AddCommand(config.NewConfigCmd())
+	rootCmd.AddCommand(service.NewServiceCmd())
 	rootCmd.AddCommand(NewVersionCmd())
 
 	// Global flags
@@ -116,7 +135,7 @@ func initConfig() {
 }
 
 func setDefaults() {
-	viper.SetDefault("api.url", "https://api.quickspin.dev")
+	viper.SetDefault("api.url", "https://api.quickspin.cloud")
 	viper.SetDefault("api.timeout", "30s")
 	viper.SetDefault("auth.method", "jwt")
 	viper.SetDefault("defaults.region", "us-east-1")

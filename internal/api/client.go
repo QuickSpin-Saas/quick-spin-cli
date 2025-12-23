@@ -14,9 +14,11 @@ import (
 
 // Client represents the API client
 type Client struct {
-	httpClient *resty.Client
-	config     *config.Config
-	baseURL    string
+	httpClient      *resty.Client
+	config          *config.Config
+	baseURL         string
+	isRefreshing    bool
+	refreshAttempts int
 }
 
 // ClientOption represents an option for configuring the client
@@ -25,28 +27,26 @@ type ClientOption func(*Client)
 // NewClient creates a new API client
 func NewClient(cfg *config.Config, opts ...ClientOption) *Client {
 	client := &Client{
-		config:     cfg,
-		baseURL:    cfg.GetAPIURL(),
-		httpClient: resty.New(),
+		config:          cfg,
+		baseURL:         cfg.GetAPIURL(),
+		httpClient:      resty.New(),
+		isRefreshing:    false,
+		refreshAttempts: 0,
 	}
 
-	// Configure HTTP client
+	// Configure HTTP client (no automatic retries to avoid Retry-After parse issues)
 	client.httpClient.
 		SetBaseURL(client.baseURL).
-		SetTimeout(30 * time.Second).
-		SetRetryCount(3).
-		SetRetryWaitTime(1 * time.Second).
-		SetRetryMaxWaitTime(5 * time.Second).
-		AddRetryCondition(func(r *resty.Response, err error) bool {
-			// Retry on 5xx errors or network errors
-			return r.StatusCode() >= 500 || err != nil
-		})
+		SetTimeout(30 * time.Second)
 
 	// Set auth token if available
 	token, err := cfg.GetToken()
 	if err == nil && token != "" {
 		client.httpClient.SetAuthToken(token)
 	}
+
+	// Add response interceptor for automatic token refresh
+	client.httpClient.OnAfterResponse(client.handleTokenRefresh)
 
 	// Apply options
 	for _, opt := range opts {
@@ -176,7 +176,10 @@ func (c *Client) handleErrorResponse(resp *resty.Response, apiErr *models.APIErr
 func (c *Client) getUserFriendlyError(apiErr *models.APIError) error {
 	switch apiErr.StatusCode {
 	case http.StatusUnauthorized:
-		return fmt.Errorf("session expired. Please run 'qspin auth login' to authenticate")
+		if apiErr.Message != "" {
+			return fmt.Errorf("unauthorized: %s", apiErr.Message)
+		}
+		return fmt.Errorf("unauthorized. Please run 'qspin auth login' to authenticate")
 	case http.StatusForbidden:
 		return fmt.Errorf("you don't have permission to perform this action")
 	case http.StatusNotFound:
@@ -213,4 +216,58 @@ func (c *Client) GetVersion(ctx context.Context) (*models.VersionInfo, error) {
 		return nil, err
 	}
 	return &result, nil
+}
+
+// handleTokenRefresh is a response interceptor that automatically refreshes tokens
+func (c *Client) handleTokenRefresh(client *resty.Client, resp *resty.Response) error {
+	// Only handle 401 Unauthorized responses
+	if resp.StatusCode() != http.StatusUnauthorized {
+		return nil
+	}
+
+	// Prevent infinite loops - only try refreshing once
+	if c.isRefreshing {
+		return nil
+	}
+
+	// Limit refresh attempts
+	if c.refreshAttempts >= 3 {
+		c.refreshAttempts = 0
+		return nil
+	}
+
+	// Mark that we're refreshing
+	c.isRefreshing = true
+	c.refreshAttempts++
+	defer func() {
+		c.isRefreshing = false
+	}()
+
+	// Get refresh token
+	refreshToken, err := c.config.GetRefreshToken()
+	if err != nil || refreshToken == "" {
+		return nil // No refresh token available
+	}
+
+	// Try to refresh the token
+	ctx := context.Background()
+	req := models.RefreshTokenRequest{
+		RefreshToken: refreshToken,
+	}
+
+	var result models.AuthTokens
+	if err := c.Post(ctx, "/api/v1/auth/refresh", req, &result); err != nil {
+		return nil // Refresh failed
+	}
+
+	// Update stored tokens
+	c.SetToken(result.AccessToken)
+	if err := c.config.SaveToken(result.AccessToken, result.RefreshToken); err != nil {
+		return nil
+	}
+
+	// Reset refresh attempts on success
+	c.refreshAttempts = 0
+
+	return nil
 }

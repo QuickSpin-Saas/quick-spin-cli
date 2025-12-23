@@ -67,12 +67,12 @@ qspin --help
 
 ## Documentation
 
-For full documentation, visit [https://docs.quickspin.dev](https://docs.quickspin.dev)
+For full documentation, visit [https://docs.quickspin.cloud](https://docs.quickspin.cloud)
 
 ## Support
 
 - GitHub Issues: [https://github.com/QuickSpin-Saas/quick-spin-cli/issues](https://github.com/QuickSpin-Saas/quick-spin-cli/issues)
-- Email: support@quickspin.dev
+- Email: support@quickspin.cloud
 
 ## License
 

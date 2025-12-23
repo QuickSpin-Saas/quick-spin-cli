@@ -2,7 +2,7 @@
 # Copy this file to ~/.quickspin/config.yaml and customize
 
 api:
-  url: https://api.quickspin.dev
+  url: https://api.quickspin.cloud
   timeout: 30s
 
 auth:
@@ -27,7 +27,7 @@ profiles:
 
   staging:
     api:
-      url: https://api-staging.quickspin.dev
+      url: https://api-staging.quickspin.cloud
     defaults:
       organization: org_staging789
       tier: developer

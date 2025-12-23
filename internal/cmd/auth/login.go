@@ -7,7 +7,8 @@ import (
 
 	"github.com/quickspin/quickspin-cli/internal/api"
 	"github.com/quickspin/quickspin-cli/internal/config"
-	"github.com/quickspin/quickspin-cli/internal/output"
+	outputpkg "github.com/quickspin/quickspin-cli/internal/output"
+	"github.com/quickspin/quickspin-cli/internal/tui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
@@ -34,6 +35,14 @@ func NewLoginCmd() *cobra.Command {
 }
 
 func runLogin(cmd *cobra.Command, args []string) error {
+	// Check if we should use TUI mode
+	outputFormat := viper.GetString("defaults.output")
+	if outputpkg.ShouldUseTUI(outputFormat) && email == "" && password == "" {
+		// Launch TUI login form
+		return tui.LaunchView(tui.ViewAuthLogin)
+	}
+
+	// Traditional CLI mode
 	ctx := context.Background()
 
 	// Get email if not provided
@@ -65,7 +74,7 @@ func runLogin(cmd *cobra.Command, args []string) error {
 	client := api.NewClient(cfg)
 
 	// Show spinner
-	spinner := output.NewSpinner("Logging in...")
+	spinner := outputpkg.NewSpinner("Logging in...")
 	spinner.Start()
 
 	// Perform login
@@ -73,15 +82,15 @@ func runLogin(cmd *cobra.Command, args []string) error {
 	spinner.Stop()
 
 	if err != nil {
-		output.Error(fmt.Sprintf("Login failed: %s", err))
+		outputpkg.Error(fmt.Sprintf("Login failed: %s", err))
 		return err
 	}
 
 	// Success message
-	output.Success(fmt.Sprintf("Successfully logged in as %s", result.User.Email))
+	outputpkg.Success(fmt.Sprintf("Successfully logged in as %s", result.User.Email))
 
 	// Display user info
 	fmt.Println()
-	formatType := output.Format(viper.GetString("defaults.output"))
-	return output.Print(formatType, result.User)
+	formatType := outputpkg.Format(viper.GetString("defaults.output"))
+	return outputpkg.Print(formatType, result.User)
 }
